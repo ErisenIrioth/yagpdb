@@ -46,7 +46,8 @@ var RulePartMap = map[int]RulePart{
 	30: &MemberJoinTrigger{},
 	31: &MessageAttachmentTrigger{},
 	32: &MessageAttachmentTrigger{RequiresAttachment: true},
-	33: &ModActionTrigger{},
+	33: &ModActionTrigger{Blacklist: false},
+	34: &ModActionTrigger{Blacklist: true},
 
 	// Conditions 2xx
 	200: &MemberRolesCondition{Blacklist: true},

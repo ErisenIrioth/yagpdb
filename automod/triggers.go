@@ -1361,10 +1361,10 @@ func (uwl *ModActionTrigger) DataType() interface{} {
 
 func (uwl *ModActionTrigger) Name() (name string) {
 	if uwl.Blacklist {
-		return "Trigger on other actions"
+		return "Mod Action negative Trigger"
 	}
 
-	return "Trigger on selected actions"
+	return "Mod Action positive Trigger"
 }
 
 func (uwl *ModActionTrigger) Description() (description string) {
