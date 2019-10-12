@@ -12,6 +12,7 @@ import (
 	"github.com/jonas747/yagpdb/automod/models"
 	"github.com/jonas747/yagpdb/automod_legacy"
 	"github.com/jonas747/yagpdb/common"
+	"github.com/jonas747/yagpdb/moderation"
 	"github.com/jonas747/yagpdb/safebrowsing"
 )
 
@@ -1336,4 +1337,73 @@ func (mat *MessageAttachmentTrigger) CheckMessage(ms *dstate.MemberState, cs *ds
 
 func (mat *MessageAttachmentTrigger) MergeDuplicates(data []interface{}) interface{} {
 	return data[0] // no point in having duplicates of this
+}
+
+/////////////////////////////////////////////////////////////
+
+var _ ModActionListener = (*ModActionTrigger)(nil)
+
+type ModActionTrigger struct {
+	Blacklist bool
+}
+
+type ModActionData struct {
+	ListID int64
+}
+
+func (uwl *ModActionTrigger) Kind() RulePartType {
+	return RulePartTrigger
+}
+
+func (uwl *ModActionTrigger) DataType() interface{} {
+	return &ModActionData{}
+}
+
+func (uwl *ModActionTrigger) Name() (name string) {
+	if uwl.Blacklist {
+		return "Trigger on other actions"
+	}
+
+	return "Trigger on selected actions"
+}
+
+func (uwl *ModActionTrigger) Description() (description string) {
+	if uwl.Blacklist {
+		return "Triggers when a mod action NOT in the list is executed against the user {Warned, Banned, Unbanned, etc.}"
+	}
+
+	return "Triggers when a mod action in the list is executed against the user {Warned, Banned, Unbanned, etc.}"
+}
+
+func (uwl *ModActionTrigger) UserSettings() []*SettingDef {
+	return []*SettingDef{
+		&SettingDef{
+			Name: "List",
+			Key:  "ListID",
+			Kind: SettingTypeList,
+		},
+	}
+}
+
+func (uwl *ModActionTrigger) CheckAction(ms *dstate.MemberState, action *moderation.ModlogAction, data interface{}) (bool, error) {
+	dataCast := data.(*ModActionData)
+
+	list, err := FindFetchGuildList(ms.Guild, dataCast.ListID)
+	if err != nil {
+		return false, nil
+	}
+
+	contained := false
+	for _, w := range list.Content {
+		if strings.EqualFold(action.Prefix, w) {
+			contained = true
+			break
+		}
+	}
+
+	if uwl.Blacklist {
+		return !contained, nil
+	}
+
+	return contained, nil
 }

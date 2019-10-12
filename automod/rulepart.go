@@ -7,6 +7,7 @@ import (
 	"github.com/jonas747/discordgo"
 	"github.com/jonas747/dstate"
 	"github.com/jonas747/yagpdb/automod/models"
+	"github.com/jonas747/yagpdb/moderation"
 )
 
 // maps rule part indentifiers to actual condition types
@@ -45,6 +46,7 @@ var RulePartMap = map[int]RulePart{
 	30: &MemberJoinTrigger{},
 	31: &MessageAttachmentTrigger{},
 	32: &MessageAttachmentTrigger{RequiresAttachment: true},
+	33: &ModActionTrigger{},
 
 	// Conditions 2xx
 	200: &MemberRolesCondition{Blacklist: true},
@@ -240,4 +242,11 @@ type JoinListener interface {
 	RulePart
 
 	CheckJoin(ms *dstate.MemberState, data interface{}) (isAffected bool, err error)
+}
+
+// ModActionListener is a trigger that gets triggered when a mod action is taken against the user
+type ModActionListener interface {
+	RulePart
+
+	CheckAction(ms *dstate.MemberState, action *moderation.ModlogAction, data interface{}) (isAffected bool, err error)
 }
