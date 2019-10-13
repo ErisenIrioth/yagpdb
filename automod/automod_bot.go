@@ -37,13 +37,18 @@ type ResetChannelRatelimitData struct {
 }
 
 func (p *Plugin) handleModAction(evt *eventsystem.EventData) {
-	p.CheckTriggers(nil, nil, nil, nil, func(trig *ParsedPart) (activated bool, err error) {
+
+	castEvt := evt.EvtInterface.(*bot.GuildMemberPunished)
+
+	ms := dstate.MSFromDGoMember(evt.GS, castEvt.Member)
+
+	p.CheckTriggers(nil, ms, nil, nil, func(trig *ParsedPart) (activated bool, err error) {
 		cast, ok := trig.Part.(ModActionListener)
 		if !ok {
 			return
 		}
 
-		return cast.CheckAction(nil, nil, trig.ParsedSettings)
+		return cast.CheckAction(ms, nil, trig.ParsedSettings)
 	})
 }
 

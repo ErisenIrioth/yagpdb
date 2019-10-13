@@ -1390,14 +1390,16 @@ func (uwl *ModActionTrigger) CheckAction(ms *dstate.MemberState, action *moderat
 
 	list, err := FindFetchGuildList(ms.Guild, dataCast.ListID)
 	if err != nil {
-		return false, nil
+		return false, err
 	}
 
 	contained := false
-	for _, w := range list.Content {
-		if strings.EqualFold(action.Prefix, w) {
-			contained = true
-			break
+	if action != nil {
+		for _, w := range list.Content {
+			if strings.EqualFold(action.Prefix, w) {
+				contained = true
+				break
+			}
 		}
 	}
 

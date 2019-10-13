@@ -426,10 +426,6 @@ func RemoveMemberMuteRole(config *Config, id int64, currentRoles []int64, mute M
 	return
 }
 
-type GuildMemberPunished struct {
-	*discordgo.Member
-}
-
 func WarnUser(config *Config, guildID, channelID int64, author *discordgo.User, target *discordgo.User, message string) error {
 	warning := &WarningModel{
 		GuildID:               guildID,
@@ -455,7 +451,7 @@ func WarnUser(config *Config, guildID, channelID int64, author *discordgo.User, 
 		return common.ErrWithCaller(err)
 	}
 
-	go eventsystem.EmitEvent(eventsystem.NewEventData(nil, eventsystem.EventModActionExecuted, GuildMemberPunished{}), eventsystem.EventModActionExecuted)
+	go eventsystem.EmitEvent(eventsystem.NewEventData(nil, eventsystem.EventModActionExecuted, bot.GuildMemberPunished{}), eventsystem.EventModActionExecuted)
 
 	gs := bot.State.Guild(true, guildID)
 	ms, _ := bot.GetMember(guildID, target.ID)

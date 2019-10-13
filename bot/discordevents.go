@@ -1,9 +1,10 @@
 package bot
 
 import (
-	"emperror.dev/errors"
 	"runtime/debug"
 	"time"
+
+	"emperror.dev/errors"
 
 	"github.com/jonas747/discordgo"
 	"github.com/jonas747/retryableredis"
@@ -14,6 +15,10 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/volatiletech/sqlboiler/boil"
 )
+
+type GuildMemberPunished struct {
+	*discordgo.Member
+}
 
 func addBotHandlers() {
 	eventsystem.AddHandlerFirstLegacy(BotPlugin, HandleReady, eventsystem.EventReady)
