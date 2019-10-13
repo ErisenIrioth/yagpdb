@@ -20,6 +20,7 @@ import (
 
 type GuildMemberPunished struct {
 	*dstate.MemberState
+	Action *string
 }
 
 func addBotHandlers() {

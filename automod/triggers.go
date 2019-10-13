@@ -12,7 +12,6 @@ import (
 	"github.com/jonas747/yagpdb/automod/models"
 	"github.com/jonas747/yagpdb/automod_legacy"
 	"github.com/jonas747/yagpdb/common"
-	"github.com/jonas747/yagpdb/moderation"
 	"github.com/jonas747/yagpdb/safebrowsing"
 )
 
@@ -1385,18 +1384,18 @@ func (uwl *ModActionTrigger) UserSettings() []*SettingDef {
 	}
 }
 
-func (uwl *ModActionTrigger) CheckAction(ms *dstate.MemberState, action *moderation.ModlogAction, data interface{}) (bool, error) {
+func (uwl *ModActionTrigger) CheckAction(ms *dstate.MemberState, action *string, data interface{}) (bool, error) {
 	dataCast := data.(*ModActionData)
 
 	list, err := FindFetchGuildList(ms.Guild, dataCast.ListID)
 	if err != nil {
-		return false, err
+		return uwl.Blacklist, err
 	}
 
 	contained := false
 	if action != nil {
 		for _, w := range list.Content {
-			if strings.EqualFold(action.Prefix, w) {
+			if strings.EqualFold(*action, w) {
 				contained = true
 				break
 			}

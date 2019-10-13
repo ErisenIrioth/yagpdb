@@ -13,10 +13,18 @@ import (
 	"github.com/jonas747/discordgo"
 	"github.com/jonas747/dstate"
 	"github.com/jonas747/yagpdb/bot"
+	"github.com/jonas747/yagpdb/bot/eventsystem"
 	"github.com/jonas747/yagpdb/commands"
 	"github.com/jonas747/yagpdb/common"
 	"github.com/jonas747/yagpdb/common/scheduledevents2"
 )
+
+func EmitModAction(action string, target *discordgo.User, gs *dstate.GuildState) {
+	ms, memberNotFound := getMemberWithFallback(gs, target)
+	if !memberNotFound {
+		go eventsystem.EmitEvent(eventsystem.NewEventData(nil, eventsystem.EventModActionExecuted, &bot.GuildMemberPunished{MemberState: ms, Action: &action}), eventsystem.EventModActionExecuted)
+	}
+}
 
 func MBaseCmd(cmdData *dcmd.Data, targetID int64) (config *Config, targetUser *discordgo.User, err error) {
 	config, err = GetConfig(cmdData.GS.ID)
@@ -143,6 +151,8 @@ var ModerationCommands = []*commands.YAGCommand{
 				return nil, err
 			}
 
+			EmitModAction("ban", target, parsed.GS)
+
 			err = BanUserWithDuration(config, parsed.GS.ID, parsed.Msg.ChannelID, parsed.Msg.Author, reason, target, parsed.Switches["d"].Value.(time.Duration))
 			if err != nil {
 				return nil, err
@@ -172,6 +182,8 @@ var ModerationCommands = []*commands.YAGCommand{
 			if err != nil {
 				return nil, err
 			}
+
+			EmitModAction("kick", target, parsed.GS)
 
 			err = KickUser(config, parsed.GS.ID, parsed.Msg.ChannelID, parsed.Msg.Author, reason, target)
 			if err != nil {
@@ -207,6 +219,8 @@ var ModerationCommands = []*commands.YAGCommand{
 			if err != nil {
 				return nil, err
 			}
+
+			EmitModAction("mute", target, parsed.GS)
 
 			muteDuration := int(parsed.Args[1].Value.(time.Duration).Minutes())
 
@@ -248,6 +262,8 @@ var ModerationCommands = []*commands.YAGCommand{
 			if err != nil {
 				return nil, err
 			}
+
+			EmitModAction("unmute", target, parsed.GS)
 
 			member, err := bot.GetMember(parsed.GS.ID, target.ID)
 			if err != nil || member == nil {
@@ -461,6 +477,8 @@ var ModerationCommands = []*commands.YAGCommand{
 				return nil, err
 			}
 
+			EmitModAction("warn", target, parsed.GS)
+
 			err = WarnUser(config, parsed.GS.ID, parsed.CS.ID, parsed.Msg.Author, target, parsed.Args[1].Str())
 			if err != nil {
 				return nil, err
@@ -627,6 +645,8 @@ var ModerationCommands = []*commands.YAGCommand{
 				return nil, err
 			}
 
+			EmitModAction("addrole", target, parsed.GS)
+
 			member, err := bot.GetMember(parsed.GS.ID, target.ID)
 			if err != nil || member == nil {
 				return "Member not found", err
@@ -699,6 +719,8 @@ var ModerationCommands = []*commands.YAGCommand{
 			if err != nil {
 				return nil, err
 			}
+
+			EmitModAction("removerole", target, parsed.GS)
 
 			member, err := bot.GetMember(parsed.GS.ID, target.ID)
 			if err != nil || member == nil {

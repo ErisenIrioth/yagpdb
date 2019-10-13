@@ -11,7 +11,6 @@ import (
 	"github.com/jonas747/dstate"
 	"github.com/jonas747/retryableredis"
 	"github.com/jonas747/yagpdb/bot"
-	"github.com/jonas747/yagpdb/bot/eventsystem"
 	"github.com/jonas747/yagpdb/common"
 	"github.com/jonas747/yagpdb/common/scheduledevents2"
 	seventsmodels "github.com/jonas747/yagpdb/common/scheduledevents2/models"
@@ -453,11 +452,8 @@ func WarnUser(config *Config, guildID, channelID int64, author *discordgo.User, 
 
 	gs := bot.State.Guild(true, guildID)
 	ms, _ := bot.GetMember(guildID, target.ID)
-	if ms != nil {
-		go eventsystem.EmitEvent(eventsystem.NewEventData(nil, eventsystem.EventModActionExecuted, &bot.GuildMemberPunished{MemberState: ms}), eventsystem.EventModActionExecuted)
-		if gs != nil {
-			sendPunishDM(config, config.WarnMessage, MAWarned, gs, author, ms, -1, message)
-		}
+	if gs != nil && ms != nil {
+		sendPunishDM(config, config.WarnMessage, MAWarned, gs, author, ms, -1, message)
 	}
 
 	// go bot.SendDM(target.ID, fmt.Sprintf("**%s**: You have been warned for: %s", bot.GuildName(guildID), message))
