@@ -83,6 +83,7 @@ var NonStandardEvents = []Event{
 	Event{"AllPre", false},
 	Event{"AllPost", false},
 	Event{"MemberFetched", false},
+	Event{"ModActionExecuted", false},
 }
 
 var (
