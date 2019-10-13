@@ -11,6 +11,7 @@ import (
 	"github.com/jonas747/dstate"
 	"github.com/jonas747/retryableredis"
 	"github.com/jonas747/yagpdb/bot"
+	"github.com/jonas747/yagpdb/bot/eventsystem"
 	"github.com/jonas747/yagpdb/common"
 	"github.com/jonas747/yagpdb/common/scheduledevents2"
 	seventsmodels "github.com/jonas747/yagpdb/common/scheduledevents2/models"
@@ -425,6 +426,10 @@ func RemoveMemberMuteRole(config *Config, id int64, currentRoles []int64, mute M
 	return
 }
 
+type GuildMemberPunished struct {
+	*discordgo.Member
+}
+
 func WarnUser(config *Config, guildID, channelID int64, author *discordgo.User, target *discordgo.User, message string) error {
 	warning := &WarningModel{
 		GuildID:               guildID,
@@ -449,6 +454,8 @@ func WarnUser(config *Config, guildID, channelID int64, author *discordgo.User, 
 	if err != nil {
 		return common.ErrWithCaller(err)
 	}
+
+	go eventsystem.EmitEvent(eventsystem.NewEventData(nil, eventsystem.EventModActionExecuted, GuildMemberPunished{}), eventsystem.EventModActionExecuted)
 
 	gs := bot.State.Guild(true, guildID)
 	ms, _ := bot.GetMember(guildID, target.ID)

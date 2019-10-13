@@ -27,12 +27,24 @@ func (p *Plugin) BotInit() {
 	eventsystem.AddHandlerAsyncLastLegacy(p, p.handleGuildMemberUpdate, eventsystem.EventGuildMemberUpdate)
 	eventsystem.AddHandlerAsyncLastLegacy(p, p.handleMsgUpdate, eventsystem.EventMessageUpdate)
 	eventsystem.AddHandlerAsyncLastLegacy(p, p.handleGuildMemberJoin, eventsystem.EventGuildMemberAdd)
+	eventsystem.AddHandlerAsyncLastLegacy(p, p.handleModAction, eventsystem.EventModActionExecuted)
 
 	scheduledevents2.RegisterHandler("amod2_reset_channel_ratelimit", ResetChannelRatelimitData{}, handleResetChannelRatelimit)
 }
 
 type ResetChannelRatelimitData struct {
 	ChannelID int64
+}
+
+func (p *Plugin) handleModAction(evt *eventsystem.EventData) {
+	p.CheckTriggers(nil, nil, nil, nil, func(trig *ParsedPart) (activated bool, err error) {
+		cast, ok := trig.Part.(ModActionListener)
+		if !ok {
+			return
+		}
+
+		return cast.CheckAction(nil, nil, trig.ParsedSettings)
+	})
 }
 
 func (p *Plugin) handleMsgUpdate(evt *eventsystem.EventData) {
