@@ -1368,10 +1368,10 @@ func (uwl *ModActionTrigger) Name() (name string) {
 
 func (uwl *ModActionTrigger) Description() (description string) {
 	if uwl.Blacklist {
-		return "Triggers when a mod action NOT in the list is executed against the user {Warned, Banned, Unbanned, etc.}"
+		return "Triggers when a mod action NOT in the list is executed against the user {warn, ban, addrole, etc.}"
 	}
 
-	return "Triggers when a mod action in the list is executed against the user {Warned, Banned, Unbanned, etc.}"
+	return "Triggers when a mod action in the list is executed against the user {warn, ban, addrole, etc.}"
 }
 
 func (uwl *ModActionTrigger) UserSettings() []*SettingDef {
