@@ -48,7 +48,7 @@ func (p *Plugin) handleModAction(evt *eventsystem.EventData) {
 			return
 		}
 
-		return cast.CheckAction(ms, nil, trig.ParsedSettings)
+		return cast.CheckAction(ms, castEvt.Action, trig.ParsedSettings)
 	})
 }
 

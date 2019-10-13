@@ -7,7 +7,6 @@ import (
 	"github.com/jonas747/discordgo"
 	"github.com/jonas747/dstate"
 	"github.com/jonas747/yagpdb/automod/models"
-	"github.com/jonas747/yagpdb/moderation"
 )
 
 // maps rule part indentifiers to actual condition types
@@ -249,5 +248,5 @@ type JoinListener interface {
 type ModActionListener interface {
 	RulePart
 
-	CheckAction(ms *dstate.MemberState, action *moderation.ModlogAction, data interface{}) (isAffected bool, err error)
+	CheckAction(ms *dstate.MemberState, action *string, data interface{}) (isAffected bool, err error)
 }
