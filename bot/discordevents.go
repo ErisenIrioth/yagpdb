@@ -4,6 +4,8 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/jonas747/dstate"
+
 	"emperror.dev/errors"
 
 	"github.com/jonas747/discordgo"
@@ -17,7 +19,7 @@ import (
 )
 
 type GuildMemberPunished struct {
-	*discordgo.Member
+	*dstate.MemberState
 }
 
 func addBotHandlers() {

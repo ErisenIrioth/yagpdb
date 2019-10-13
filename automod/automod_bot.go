@@ -40,7 +40,7 @@ func (p *Plugin) handleModAction(evt *eventsystem.EventData) {
 
 	castEvt := evt.EvtInterface.(*bot.GuildMemberPunished)
 
-	ms := dstate.MSFromDGoMember(evt.GS, castEvt.Member)
+	ms := castEvt.MemberState
 
 	p.CheckTriggers(nil, ms, nil, nil, func(trig *ParsedPart) (activated bool, err error) {
 		cast, ok := trig.Part.(ModActionListener)
